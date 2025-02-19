@@ -5,7 +5,7 @@ import { useLogEntries } from '../../hooks/useLogEntries';
 import { createLogEntry } from '../../shared/apiClient/logsApi';
 import { Error } from '../shared/Error';
 import { Loading } from '../shared/Loading';
-import { CreateLogEntryModal } from './CreateLogEntryModal';
+import { LogEntryModal } from './LogEntryModal';
 import { ViewLogEntriesEmptyPage } from './ViewLogEntriesEmptyPage';
 import { ViewLogEntriesHeader } from './ViewLogEntriesHeader';
 import { ViewLogEntriesTable } from './ViewLogEntriesTable';
@@ -57,9 +57,9 @@ export function ViewLogEntries() {
   return (
     <Container>
       {isCreateEntryOpen && (
-        <CreateLogEntryModal
+        <LogEntryModal
           handleClose={handleCloseModal}
-          handleCreate={handleCreateLogEntry}
+          handleSubmit={handleCreateLogEntry}
         />
       )}
       <ViewLogEntriesHeader

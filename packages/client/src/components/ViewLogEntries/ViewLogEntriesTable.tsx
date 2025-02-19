@@ -1,7 +1,8 @@
 import { LogEntryResponse } from '@mapistry/take-home-challenge-shared';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useLogEntries } from '../../hooks/useLogEntries';
+import { LogEntryModal } from './LogEntryModal';
 import { deleteLogEntry, editLogEntry } from '../../shared/apiClient/logsApi';
 
 interface ViewLogEntriesTableProps {
@@ -25,6 +26,10 @@ const StyledTable = styled.table`
 `;
 
 export function ViewLogEntriesTable({ logId }: ViewLogEntriesTableProps) {
+
+  const [isEditEntryOpen, setIsEditEntryOpen] = useState(false);
+  const [logEntryToEdit, setLogEntryToEdit] = useState<LogEntryResponse|undefined>(undefined);
+
   const { logEntries, refreshLogEntries } = useLogEntries({ logId });
   const handleDelete = useCallback(
     async (logEntry) => {
@@ -37,11 +42,15 @@ export function ViewLogEntriesTable({ logId }: ViewLogEntriesTableProps) {
     [refreshLogEntries],
   );
 
+  const handleCloseModal = useCallback(() => {
+    setIsEditEntryOpen(false);
+    setLogEntryToEdit(undefined);
+  }, [setIsEditEntryOpen]);
+
   const handleEdit = useCallback(
     async (logEntry) => {
-      const update = logEntry;
-      update.logValue = Math.floor(Math.random() * 30);
-      await editLogEntry(update);
+      await editLogEntry(logEntry);
+      setIsEditEntryOpen(false)
       refreshLogEntries();
     },
     [refreshLogEntries],
@@ -62,7 +71,10 @@ export function ViewLogEntriesTable({ logId }: ViewLogEntriesTableProps) {
   function actions(logEntry: LogEntryResponse) {
     return (
       <div>
-        <button type="button" style={{ marginRight: '0.5rem' }} onClick={() => handleEdit(logEntry)}>
+        <button type="button" style={{ marginRight: '0.5rem' }} onClick={() => {
+          setLogEntryToEdit(logEntry)
+          setIsEditEntryOpen(true)
+        }}>
           Edit
         </button>
         <button type="button" onClick={() => handleDelete(logEntry)}>
@@ -88,6 +100,13 @@ export function ViewLogEntriesTable({ logId }: ViewLogEntriesTableProps) {
 
   return (
     <div>
+      {isEditEntryOpen && (
+        <LogEntryModal
+          logEntry={logEntryToEdit}
+          handleClose={handleCloseModal}
+          handleSubmit={handleEdit}
+        />
+      )}
       <StyledTable>
         {columns()}
         {rows()}
