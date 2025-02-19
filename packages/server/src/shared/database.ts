@@ -91,13 +91,12 @@ export class Database {
     await this.simulateDbSlowness();
     const db = await fs.readFileSync(FILE_NAME, 'utf8');
     const allEntries = JSON.parse(db) as LogEntriesRecord[];
-    const index = allEntries.findIndex((le) => le.id === logEntryId);
     
     // validation; error out, if index is not found
+    const index = allEntries.findIndex((le) => le.id === logEntryId);
 
-    let recordToUpdate = allEntries[index];
-    recordToUpdate = updateLogEntryRequest; // overwrite/edit action
-    recordToUpdate.updatedAt = new Date();
+    allEntries[index] = updateLogEntryRequest; // overwrite/edit action
+    allEntries[index].updatedAt = new Date();
     await fs.writeFileSync(FILE_NAME, JSON.stringify(allEntries));
     return logEntryId;
   }
