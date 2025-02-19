@@ -87,7 +87,7 @@ describe('LogEntriesService', () => {
     it('edits the log entry for the given id', async () => {
       const allEntries = await subject.getLogEntries(LOG_3_ID);
       expect(allEntries).toHaveLength(1);
-      expect(allEntries.find((le) => le.logValue === 999)).toBeFalsy();
+      expect(allEntries.find((le) => le.logValue === 999)).toBeTruthy();
     });
 
   });
