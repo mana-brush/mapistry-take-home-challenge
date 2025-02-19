@@ -2,7 +2,7 @@ import { LogEntryResponse } from '@mapistry/take-home-challenge-shared';
 import { useCallback } from 'react';
 import styled from 'styled-components';
 import { useLogEntries } from '../../hooks/useLogEntries';
-import { deleteLogEntry } from '../../shared/apiClient/logsApi';
+import { deleteLogEntry, editLogEntry } from '../../shared/apiClient/logsApi';
 
 interface ViewLogEntriesTableProps {
   logId: string;
@@ -37,6 +37,16 @@ export function ViewLogEntriesTable({ logId }: ViewLogEntriesTableProps) {
     [refreshLogEntries],
   );
 
+  const handleEdit = useCallback(
+    async (logEntry) => {
+      const update = logEntry;
+      update.logValue = Math.floor(Math.random() * 30);
+      await editLogEntry(update);
+      refreshLogEntries();
+    },
+    [refreshLogEntries],
+  );
+
   function columns() {
     return (
       <thead>
@@ -52,7 +62,7 @@ export function ViewLogEntriesTable({ logId }: ViewLogEntriesTableProps) {
   function actions(logEntry: LogEntryResponse) {
     return (
       <div>
-        <button type="button" style={{ marginRight: '0.5rem' }}>
+        <button type="button" style={{ marginRight: '0.5rem' }} onClick={() => handleEdit(logEntry)}>
           Edit
         </button>
         <button type="button" onClick={() => handleDelete(logEntry)}>

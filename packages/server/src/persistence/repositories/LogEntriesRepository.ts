@@ -28,7 +28,7 @@ export class LogEntriesRepository {
   }
 
   async editLogEntry(logEntryId: string, updateLogEntryRequest: LogEntriesRecord): Promise<string> {
-    const log = await Database.editLogEntry(logEntryId, updateLogEntryRequest);
-    return log;
+    const logId = await Database.editLogEntry(logEntryId, updateLogEntryRequest);
+    return logId;
   }
 }

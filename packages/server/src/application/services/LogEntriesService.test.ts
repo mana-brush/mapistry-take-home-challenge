@@ -78,7 +78,7 @@ describe('LogEntriesService', () => {
         id: '-1',
         logId: LOG_3_ID,
         logDate: new Date('2024-01-01'),
-        logValue: 999,
+        logValue: 999, // todo assert off prior value to check for change
       };
       [entryToEdit] = await Database.getAllLogEntries(LOG_3_ID);
       await subject.editLogEntry(LOG_3_ID, entryToEdit!.id, editEntry);
