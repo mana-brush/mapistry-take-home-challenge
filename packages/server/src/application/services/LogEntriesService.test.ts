@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   LOG_2_ID,
-  LogEntryResponse,
+  LOG_3_ID,
+  LogEntryResponse
 } from '@mapistry/take-home-challenge-shared';
 import { Database, LogEntriesRecord } from '../../shared/database';
 import { LogEntriesService } from './LogEntriesService';
@@ -66,5 +67,28 @@ describe('LogEntriesService', () => {
     it('returns the deleted log entry id', () => {
       expect(result).toBe(entryToDelete!.id);
     });
+  });
+
+  describe('editLogEntry', () => {
+
+    let entryToEdit: LogEntriesRecord | undefined;
+
+    beforeAll(async () => {
+      const editEntry: LogEntriesRecord = {
+        id: '-1',
+        logId: LOG_3_ID,
+        logDate: new Date('2024-01-01'),
+        logValue: 999,
+      };
+      [entryToEdit] = await Database.getAllLogEntries(LOG_3_ID);
+      await subject.editLogEntry(LOG_3_ID, entryToEdit!.id, editEntry);
+    });
+
+    it('edits the log entry for the given id', async () => {
+      const allEntries = await subject.getLogEntries(LOG_3_ID);
+      expect(allEntries).toHaveLength(1);
+      expect(allEntries.find((le) => le.logValue === 999)).toBeFalsy();
+    });
+
   });
 });
