@@ -1,10 +1,11 @@
-import { CreateLogEntryRequest } from '@mapistry/take-home-challenge-shared';
+import { CreateLogEntryRequest, LogEntryResponse } from '@mapistry/take-home-challenge-shared';
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 
-interface CreateLogEntryProps {
+interface LogEntryProps {
+  logEntry?: LogEntryResponse | undefined;
   handleClose: () => void;
-  handleCreate: (logEntry: CreateLogEntryRequest) => void;
+  handleSubmit: (logEntry: CreateLogEntryRequest) => void;
 }
 
 const Modal = styled.div`
@@ -70,10 +71,22 @@ const ButtonContainer = styled.div`
   }
 `;
 
-export function CreateLogEntryModal({
+export function LogEntryModal({
+  logEntry = undefined,
   handleClose,
-  handleCreate,
-}: CreateLogEntryProps) {
+  handleSubmit,
+}: LogEntryProps) {
+
+  // todo write something custom, or inject moment js to better handle timezone issues
+  function parseLogEntryDate(date: string | undefined): string{
+  if (date) {
+    const newDate = new Date(date);
+    // Format the date as YYYY-MM-DD
+    return newDate.toISOString().split('T')[0];
+  }
+  return '';
+}
+
   return (
     <Modal>
       <ModalContent>
@@ -88,21 +101,22 @@ export function CreateLogEntryModal({
               logDate: { value: string };
               logValue: { value: string };
             };
-            const logEntry = {
+            const log = {
+              ...logEntry,
               logDate: new Date(target.logDate.value),
               logValue: parseInt(target.logValue.value, 10),
             };
-            handleCreate(logEntry);
+            handleSubmit(log);
           }}
         >
           <label htmlFor="logDate">
             Date:&nbsp;
-            <input type="date" name="logDate" />
+            <input type="date" name="logDate" defaultValue={parseLogEntryDate(logEntry?.logDate?.toString())}/>
           </label>
 
           <label htmlFor="logValue">
             Value:&nbsp;
-            <input type="text" name="logValue" />
+            <input type="text" name="logValue" defaultValue={logEntry?.logValue || ''}/>
           </label>
           <ButtonContainer>
             <button type="button" onClick={handleClose}>
@@ -114,4 +128,8 @@ export function CreateLogEntryModal({
       </ModalContent>
     </Modal>
   );
+}
+
+LogEntryModal.defaultProps = {
+  logEntry: undefined
 }

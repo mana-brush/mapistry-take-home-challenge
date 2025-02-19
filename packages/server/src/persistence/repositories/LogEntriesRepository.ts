@@ -1,5 +1,5 @@
 import { LogEntry } from '../../domain/entities/LogEntry';
-import { Database } from '../../shared/database';
+import { Database, LogEntriesRecord } from '../../shared/database';
 import { RecordNotFoundError } from '../../shared/errors';
 import { LogEntriesPersistenceMapper } from '../mappers/LogEntriesPersistenceMapper';
 
@@ -25,5 +25,10 @@ export class LogEntriesRepository {
   async destroyLogEntry(logEntry: LogEntry): Promise<string> {
     await Database.deleteLogEntry(logEntry.id.value);
     return logEntry.id.value;
+  }
+
+  async editLogEntry(logEntryId: string, updateLogEntryRequest: LogEntriesRecord): Promise<string> {
+    const logId = await Database.editLogEntry(logEntryId, updateLogEntryRequest);
+    return logId;
   }
 }

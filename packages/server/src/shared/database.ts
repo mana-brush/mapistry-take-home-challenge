@@ -1,4 +1,4 @@
-import { LOG_1_ID, LOG_2_ID } from '@mapistry/take-home-challenge-shared';
+import { LOG_1_ID, LOG_2_ID, LOG_3_ID } from '@mapistry/take-home-challenge-shared';
 import crypto from 'crypto';
 import fs from 'fs';
 
@@ -7,6 +7,7 @@ export type LogEntriesRecord = {
   logId: string;
   logDate: Date;
   logValue: number;
+  updatedAt?: Date;
 };
 
 const LOG_ENTRIES_TABLE_SEED: LogEntriesRecord[] = [
@@ -33,6 +34,12 @@ const LOG_ENTRIES_TABLE_SEED: LogEntriesRecord[] = [
     logId: LOG_2_ID,
     logDate: new Date('2024-01-01'),
     logValue: 15,
+  },
+  {
+    id: crypto.randomUUID().toString(),
+    logId: LOG_3_ID,
+    logDate: new Date('2025-02-18'),
+    logValue: 25,
   },
 ];
 
@@ -80,6 +87,21 @@ export class Database {
     return logEntryId;
   }
 
+  public static async editLogEntry(logEntryId: string, updateLogEntryRequest: LogEntriesRecord): Promise<string> {
+    await this.simulateDbSlowness();
+    const db = await fs.readFileSync(FILE_NAME, 'utf8');
+    const allEntries = JSON.parse(db) as LogEntriesRecord[];
+    
+    // validation; error out, if index is not found
+    const index = allEntries.findIndex((le) => le.id === logEntryId);
+
+    allEntries[index] = updateLogEntryRequest; // overwrite/edit action
+    allEntries[index].updatedAt = new Date();
+    await fs.writeFileSync(FILE_NAME, JSON.stringify(allEntries));
+    return logEntryId;
+  }
+
+  // haha, interesting
   private static simulateDbSlowness(ms = 1000) {
     return new Promise((resolve) => {
       setTimeout(resolve, ms);

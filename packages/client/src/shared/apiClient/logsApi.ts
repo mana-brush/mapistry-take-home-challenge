@@ -57,3 +57,18 @@ export async function deleteLogEntry(logEntry: LogEntryResponse) {
     throw new Error('Failed to delete log entry');
   }
 }
+
+
+export async function editLogEntry(logEntry: LogEntryResponse) {
+  const { logId, id } = logEntry;
+  const res = await fetch(`/api/logs/${logId}/log-entries/${id}`, {
+    body: JSON.stringify({ logEntry }),
+    method: 'PATCH',
+    headers: {
+      'content-type': 'application/json',
+    },
+  });
+  if (!res.ok) {
+    throw new Error('Failed to edit log entry');
+  }
+}
